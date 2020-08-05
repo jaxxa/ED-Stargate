@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,6 +48,8 @@ namespace Enhanced_Development.Stargate
         int requiredCapacitorCharge = 1000;
         int chargeSpeed = 1;
 
+        private Map currentMap;
+
         #endregion
 
         static Building_Stargate()
@@ -83,9 +85,10 @@ namespace Enhanced_Development.Stargate
 
         #region Override
 
-        public override void SpawnSetup()
+        public override void SpawnSetup(Map map)
         {
-            base.SpawnSetup();
+            this.currentMap = map;
+            base.SpawnSetup(map);
 
             this.power = base.GetComp<CompPowerTrader>();
 
@@ -397,7 +400,7 @@ namespace Enhanced_Development.Stargate
             {
 
                 //Thing foundThing = Enhanced_Development.Utilities.Utilities.FindItemThingsInAutoLoader(this);
-                Thing foundThing = Enhanced_Development.Utilities.Utilities.FindItemThingsNearBuilding(this, Building_Stargate.ADDITION_DISTANCE);
+                Thing foundThing = Enhanced_Development.Utilities.Utilities.FindItemThingsNearBuilding(this, Building_Stargate.ADDITION_DISTANCE, this.currentMap);
 
                 if (foundThing != null)
                 {
@@ -416,7 +419,7 @@ namespace Enhanced_Development.Stargate
                 }
 
                 // Tell the MapDrawer that here is something thats changed
-                Find.MapDrawer.MapMeshDirty(Position, MapMeshFlag.Things, true, false);
+                Find.VisibleMap.mapDrawer.MapMeshDirty(Position, MapMeshFlag.Things, true, false);
             }
             else
             {
@@ -450,7 +453,7 @@ namespace Enhanced_Development.Stargate
                 }
 
                 // Tell the MapDrawer that here is something thats changed
-                Find.MapDrawer.MapMeshDirty(Position, MapMeshFlag.Things, true, false);
+                Find.VisibleMap.mapDrawer.MapMeshDirty(Position, MapMeshFlag.Things, true, false);
             }
             else
             {
@@ -474,7 +477,7 @@ namespace Enhanced_Development.Stargate
                     this.listOfBufferThings.Clear();
 
                     // Tell the MapDrawer that here is something thats changed
-                    Find.MapDrawer.MapMeshDirty(Position, MapMeshFlag.Things, true, false);
+                    Find.VisibleMap.mapDrawer.MapMeshDirty(Position, MapMeshFlag.Things, true, false);
 
                     this.currentCapacitorCharge -= this.requiredCapacitorCharge;
                 }
@@ -508,13 +511,13 @@ namespace Enhanced_Development.Stargate
 
                     currentThing.SetFactionDirect(RimWorld.Faction.OfPlayer);
 
-                    GenPlace.TryPlaceThing(currentThing, this.Position + new IntVec3(0, 0, -2), ThingPlaceMode.Near);
+                    GenPlace.TryPlaceThing(currentThing, this.Position + new IntVec3(0, 0, -2), this.currentMap, ThingPlaceMode.Near);
                 }
                 //Log.Message("End of Placing");
                 inboundBuffer.Clear();
 
                 // Tell the MapDrawer that here is something thats changed
-                Find.MapDrawer.MapMeshDirty(Position, MapMeshFlag.Things, true, false);
+                Find.VisibleMap.mapDrawer.MapMeshDirty(Position, MapMeshFlag.Things, true, false);
 
                 this.MoveToBackup();
 
